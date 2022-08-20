@@ -1,0 +1,24 @@
+{
+  "name": "chainlink_encode_hackathon",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MGM103/chainlink_encode_hackathon.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MGM103/chainlink_encode_hackathon/issues"
+  },
+  "homepage": "https://github.com/MGM103/chainlink_encode_hackathon#readme",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^1.0.1",
+    "hardhat": "^2.10.2"
+  }
+}
