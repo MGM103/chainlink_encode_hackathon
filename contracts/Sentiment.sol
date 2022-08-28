@@ -9,13 +9,13 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/utils/Base64.sol";
-//import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
 
 //Chainlink contract imports
 import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
 import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
 
-contract Sentiment is ERC721URIStorage, VRFConsumerBaseV2 {
+contract Sentiment is ERC721URIStorage, VRFConsumerBaseV2, AccessControl {
     //Chainlink VRF variables
     VRFCoordinatorV2Interface internal immutable COORDINATOR;
     uint64 internal immutable subscriptionId;
@@ -25,7 +25,7 @@ contract Sentiment is ERC721URIStorage, VRFConsumerBaseV2 {
     uint32 internal immutable numWords;
 
     //Role based access control setup
-    //bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+    bytes32 public constant SUBMANAGER_ROLE = keccak256("SUBMANAGER_ROLE");
 
     //Use open zeplin counters for iterator object
     using Counters for Counters.Counter;
@@ -55,8 +55,8 @@ contract Sentiment is ERC721URIStorage, VRFConsumerBaseV2 {
     ERC721("Sentiment", "SENTI")
     VRFConsumerBaseV2(_vrfCoordinator)
     {
-        // _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        // _grantRole(MINTER_ROLE, msg.sender);
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(SUBMANAGER_ROLE, msg.sender);
 
         COORDINATOR = VRFCoordinatorV2Interface(_vrfCoordinator);
         subscriptionId = _subscriptionId;
@@ -151,12 +151,17 @@ contract Sentiment is ERC721URIStorage, VRFConsumerBaseV2 {
         return _tokenIds.current();
     }
 
-    // function supportsInterface(bytes4 interfaceId)
-    //     public
-    //     view
-    //     override(ERC721, AccessControl)
-    //     returns (bool)
-    // {
-    //     return super.supportsInterface(interfaceId);
-    // }
+    function addConsumer(address consumerAddress) public onlyRole(SUBMANAGER_ROLE) {
+        // Add a consumer contract to the subscription.
+        COORDINATOR.addConsumer(subscriptionId, consumerAddress);
+    }
+
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        override(ERC721, AccessControl)
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
+    }
 }
